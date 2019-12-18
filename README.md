@@ -1,73 +1,84 @@
-# What is this repo about?
-This is a telegram bot writen in python for mirroring files on the internet to our beloved Google Drive.
+## What is this repo?
+This is a repo for a Telegram bot writen in python that uses aria2 to mirror files from the internet into Google Drive. This can be deployed onto a personal server using Docker or on Heroku.
 
-# Inspiration 
-This project is heavily inspired from @out386 's telegram bot which is written in JS.
-
-# Features supported:
-- Mirroring direct download links to google drive
-- Download progress
+## Features:
+- Mirroring direct download links to Google Drive
+- Mirroring torrent magnet links to Google Drive
+- Mirroring downloads into the archived .tar format to Google Drive
 - Upload progress
 - Download/upload speeds and ETAs
-- Docker support
 
-# Upcoming features (TODOs):
-- Mega link mirror support
-- More code clean up
+## Disclaimer
+This process wil take apporoximately 30 minutes to setup
+You will need a Linux terminal to set this up. Windows user can also complete this using something called WSL (research this)
+You will need to deploy this bot either on your own server using Docker or on Heroku using a free Heroku account
+I do not reccomend using this bot on Telegram groups with large amounts of people as it will overload the bot
+All of this tutorial will be done for Ubuntu systems
 
-# How to deploy?
-Deploying is pretty much straight forward and is divided into several steps as follows:
-## Installing requirements
-
-- Clone this repo:
+# Tutorial
+### Pre-Requirements
+Before beginning on the Terminal you will need to run the following commands:
 ```
-git clone https://github.com/lzzy12/python-aria-mirror-bot mirror-bot/
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt install python3
+sudo apt install npm
+sudo apt install snapd
+sudo apt install python-pip
+sudo apt install git-all
+curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+```
+Clone this repo:
+```
+git clone https://github.com/eliasbenb/TorrentBot/
 cd mirror-bot
 ```
-
-- Install requirements
-For Debian based distros
+For WSL users:
+- If you are on WSL you will need to install a file explorer
+- You will also need to learn how to use that file explorer
+- I reccomend this one:
 ```
-sudo apt install python3
-sudo snap install docker 
+sudo apt-get install mc
 ```
-- For Arch and it's derivatives:
-```
-sudo pacman -S docker python
-```
-
-## Setting up config file
+### Setting up config.ini
+Now you will need to create a config.ini file. Run this command to copy my template into a new config.ini file
 ```
 cp bot/config_sample.ini bot/config.ini
 ```
-- Remove the first line saying:
+Open your file explorer and open ./bot/config.ini
+Remove the second line saying:
 ```
 _____REMOVE_THIS_LINE_____=True
 ```
-Fill up rest of the fields. Meaning of each fields are discussed below:
-- BOT_TOKEN : The telegram bot token that you get from @BotFather
-- GDRIVE_FOLDER_ID : This is the folder ID of the Google Drive Folder to which you want to upload all the mirrors.
-- DOWNLOAD_DIR : The path to the local folder where the downloads should be downloaded to
-- DOWNLOAD_STATUS_UPDATE_INTERVAL : A short interval of time in seconds after which the Mirror progress message is updated. (I recommend to keep it 5 seconds at least)  
+Fill the rest of the fields with the information needed
+Make sure to read all the notes below before filling it in
+- BOT_TOKEN : Get BOT_TOKEN from @BotFather after creating your bot
+- GDRIVE_FOLDER_ID : This is the end of a GDrive folder link
+- DOWNLOAD_DIR : The path to the local folder where the downloads should be downloaded to, if you are doing this on Heroku set the path to: /home/username/mirror-bot/downloads
+- DOWNLOAD_STATUS_UPDATE_INTERVAL : The time in seconds that the bot will update
 - OWNER_ID : The Telegram user ID (not username) of the owner of the bot
-- AUTO_DELETE_MESSAGE_DURATION : Interval of time (in seconds), after which the bot deletes it's message (and command message) which is expected to be viewed instantly. Note: Set to -1 to never automatically delete messages
+- AUTO_DELETE_MESSAGE_DURATION : The time in seconds that the bot will keep a message before deleting it. Set to -1 to never delete messages
 
 Note: You can limit maximum concurrent downloads by changing the value of MAX_CONCURRENT_DOWNLOADS in aria.sh. By default, it's set to 2
  
-## Getting Google OAuth API credential file
+### Getting Google OAuth API credential file
 
 - Visit the Google Cloud Console
 - Go to the OAuth Consent tab, fill it, and save.
 - Go to the Credentials tab and click Create Credentials -> OAuth Client ID
 - Choose Other and Create.
 - Use the download button to download your credentials.
-- Move that file to the root of mirror-bot, and rename it to credentials.json
+- Move that file to the root of TorrentBot, and rename it to credentials.json
 - Finally, run the script to generate token file (token.pickle) for Google Drive:
 ```
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 python3 generate_drive_token.py
 ```
-## Deploying
+Note: for WSL users this won't work. You have to upload the credentials.json file to a cloud storage and download the file on WSL using 
+```
+wget www.insertlinkhere.com/downloadlink/credentials.json
+```
+### Deploying on Docker (SKIP IF DOING HEROKU)
 
 - Start docker daemon (skip if already running):
 ```
@@ -82,14 +93,8 @@ sudo docker build . -t mirror-bot
 sudo docker run mirror-bot
 ```
 
-## Deploying on Heroku
-- Run the script to generate token file(token.pickle) for Google Drive:
-```
-python3 generate_drive_token.py
-```
-- Change Bot Download Dir to /bot/downloads in config.ini file.
-- Install [Heroku cli](https://devcenter.heroku.com/articles/heroku-cli)
-- Login into your heroku account with command:
+### Deploying on Heroku
+- Login into your heroku account with command and follow on screen instructions:
 ```
 heroku login
 ```
@@ -130,5 +135,5 @@ Heroku-Note: Doing authorizations ( /authorize command ) through telegram wont b
 ```
 git add authorized_chats.txt -f
 git commit -asm "Added hardcoded authorized_chats.txt"
-git push heroku heroku:master
+git push heroku master
 ```
