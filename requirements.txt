@@ -1,0 +1,11 @@
+python-telegram-bot
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+more-itertools>=4.2.0
+ndg-httpsclient>=0.4.0
+pyasn1>=0.4.3
+pyasn1-modules>=0.2.1
+uritemplate>=3.0.0
+urllib3>=1.23
+aria2p
