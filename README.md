@@ -31,7 +31,7 @@ curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
 Clone this repo:
 ```
 git clone https://github.com/eliasbenb/TorrentBot/
-cd mirror-bot
+cd TorrentBot
 ```
 For WSL users:
 - If you are on WSL you will need to install a file explorer
